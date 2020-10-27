@@ -5,11 +5,15 @@ import tetris.gui.Block;
 import tetris.gui.GUI;
 
 public class Game {
-    private Block block;
     private final GUI gui;
+    private final int width;
+    private final int height;
+    private Block block;
 
-    public Game(GUI gui) {
+    public Game(GUI gui, int width, int height) {
         this.gui = gui;
+        this.width = width;
+        this.height = height;
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
@@ -23,24 +27,29 @@ public class Game {
     }
 
     private void createBlock() {
-        block = new Block(5, 5, 1);
+        block = new Block(((width - 1) / 2), (height - 1), 1);
         updateGUI();
     }
 
     private void handleEvent(ActionEvent event) {
-        if (event == ActionEvent.MOVE_LEFT) {
-            block.x -= 1;
+        switch (event) {
+            case MOVE_LEFT:
+                block.x--;
+                break;
+            case MOVE_RIGHT:
+                block.x++;
+                break;
+            case MOVE_DOWN:
+                block.y--;
+                break;
+            default:
+                break;
         }
-        else if (event == ActionEvent.MOVE_RIGHT) {
-            block.x += 1;
-        }
-        else if (event == ActionEvent.MOVE_DOWN) {
-            block.y -= 1;
-        }
-        gui.drawBlock(block);
+        updateGUI();
     }
 
     public void updateGUI() {
+        gui.clear();
         gui.drawBlock(block);
     }
 }

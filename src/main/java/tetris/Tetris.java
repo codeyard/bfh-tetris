@@ -7,8 +7,15 @@ public class Tetris {
     private static final int HEIGHT = 20;
 
     public static void main(String[] args) {
-        GUI gui = new GUI(WIDTH, HEIGHT);
-        Game game = new Game(gui);
+        int width = WIDTH;
+        int height = HEIGHT;
+        try {
+            width = Integer.parseInt(args[0]);
+            height = Integer.parseInt(args[1]);
+        } catch (ArrayIndexOutOfBoundsException |NumberFormatException ex) {
+        }
+        GUI gui = new GUI(width, height);
+        Game game = new Game(gui, width, height);
         game.start();
     }
 }
