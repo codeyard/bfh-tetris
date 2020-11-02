@@ -1,33 +1,22 @@
+/**
+ * The class Figure implements a figure of the Tetris game.
+ * Version: 1.0
+ * Author: Raphael Gerber
+ */
+
 package tetris.model;
 
 import tetris.gui.Block;
 
-public class Figure {
+public abstract class Figure {
     /**
-     * The blocks of the fiugre.
+     * The blocks of the figure.
      */
-    private final Block[] blocks = new Block[4];
-
-    /**
-     * The color of the figure.
-     */
-    private static final int COLOR = 1;
-
-    /**
-     * Creates a figure.
-     * @param x = the x coordinate of the initial position
-     * @param y = the y coordinate of the initial position
-     */
-    public Figure(int x, int y) {
-        blocks[0] = new Block(x, y, COLOR);
-        blocks[1] = new Block(x - 1, y, COLOR);
-        blocks[2] = new Block(x + 1, y, COLOR);
-        blocks[3] = new Block(x + 2, y, COLOR);
-    }
+    protected final Block[] blocks = new Block[4];
 
     /**
      * Gets the blocks of the figure.
-     * @return
+     * @return the blocks of the figure
      */
     public Block[] getBlocks() {
         return blocks;
@@ -50,15 +39,33 @@ public class Figure {
      * @param d = the direction of the rotation (+1 right, -1 left)
      */
     public void rotate(int d) {
-        switch (d) {
-            case 1:
+        int xCenter = 0;
+        int yCenter = 0;
+        int xOld = 0;
+        int yOld = 0;
+        int xNew = 0;
+        int yNew = 0;
+        for (Block block : blocks) {
+            xCenter += block.x;
+            yCenter += block.y;
+        }
+        xCenter = xCenter / blocks.length;
+        yCenter = yCenter  / blocks.length;
 
-                break;
-            case -1:
+        for (Block block : blocks) {
+            xOld = block.x - xCenter;
+            yOld = block.y - yCenter;
 
-                break;
-            default:
-                break;
+            if (d > 0) {
+                xNew = yOld;
+                yNew = (xOld * (-1));
+            } else {
+                xNew = (yOld * (-1));
+                yNew = xOld;
+            }
+
+            block.x = (int) Math.round(xCenter + (double) (xNew * d));
+            block.y = (int) Math.round(yCenter + (double) (yNew * d));
         }
     }
 }

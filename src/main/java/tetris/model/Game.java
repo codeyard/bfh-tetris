@@ -1,7 +1,16 @@
+/**
+ * The class Game implements the Tetris game.
+ * Version: 1.0
+ * Author: Raphael Gerber
+ */
+
 package tetris.model;
 
 import tetris.gui.ActionEvent;
 import tetris.gui.GUI;
+import tetris.model.figures.*;
+
+import java.util.Random;
 
 public class Game {
     private final GUI gui; /* The graphical user interface. */
@@ -22,7 +31,7 @@ public class Game {
     }
 
     /**
-     *  the game by creating a figure and waiting for action events.
+     *  Start the game by creating a figure and waiting for action events.
      */
     @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
@@ -35,10 +44,39 @@ public class Game {
     }
 
     /**
-     * Creates a figure at the top of the field.
+     * Creates a random figure at the top of the field.
      */
     private void createFigure() {
-        figure = new Figure((width - 1) / 2, height - 1);
+        int x = (width - 1) / 2;
+        int y = height - 1;
+        String[] chars = new String[] {"I", "J", "L", "O", "S", "T", "Z"};
+        int index = new Random().nextInt(chars.length);
+        String random = (chars[index]);
+
+        switch (random) {
+            case "I":
+                figure = new IFigure(x, y);
+                break;
+            case "J":
+                figure = new JFigure(x, y);
+                break;
+            case "L":
+                figure = new LFigure(x, y);
+                break;
+            case "O":
+                figure = new OFigure(x, y);
+                break;
+            case "S":
+                figure = new SFigure(x, y);
+                break;
+            case "T":
+                figure = new TFigure(x, y);
+                break;
+            default:
+                figure = new ZFigure(x, y);
+                break;
+        }
+
         updateGUI();
     }
 
