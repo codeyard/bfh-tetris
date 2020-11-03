@@ -39,33 +39,13 @@ public abstract class Figure {
      * @param d = the direction of the rotation (+1 right, -1 left)
      */
     public void rotate(int d) {
-        int xCenter = 0;
-        int yCenter = 0;
-        int xOld = 0;
-        int yOld = 0;
-        int xNew = 0;
-        int yNew = 0;
+        int cx = blocks[0].x;
+        int cy = blocks[0].y;
         for (Block block : blocks) {
-            xCenter += block.x;
-            yCenter += block.y;
-        }
-        xCenter = xCenter / blocks.length;
-        yCenter = yCenter  / blocks.length;
-
-        for (Block block : blocks) {
-            xOld = block.x - xCenter;
-            yOld = block.y - yCenter;
-
-            if (d > 0) {
-                xNew = yOld;
-                yNew = (xOld * (-1));
-            } else {
-                xNew = (yOld * (-1));
-                yNew = xOld;
-            }
-
-            block.x = (int) Math.round(xCenter + (double) (xNew * d));
-            block.y = (int) Math.round(yCenter + (double) (yNew * d));
+            int dx = block.x - cx;
+            int dy = block.y - cy;
+            block.x = cx + d * dy;
+            block.y = cy - d * dx;
         }
     }
 }

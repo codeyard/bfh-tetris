@@ -18,8 +18,8 @@ public class IFigure extends Figure {
      * @param y = the y coordinate of the initial position
      */
     public IFigure(int x, int y) {
-        blocks[0] = new Block(x - 1, y, COLOR);
-        blocks[1] = new Block(x, y, COLOR);
+        blocks[0] = new Block(x, y, COLOR);
+        blocks[1] = new Block(x - 1, y, COLOR);
         blocks[2] = new Block(x + 1, y, COLOR);
         blocks[3] = new Block(x + 2, y, COLOR);
     }
