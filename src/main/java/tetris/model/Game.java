@@ -33,7 +33,6 @@ public class Game {
     /**
      *  Start the game by creating a figure and waiting for action events.
      */
-    @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
         createFigure();
         FigureController controller = new FigureController();
