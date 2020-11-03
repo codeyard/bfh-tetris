@@ -6,7 +6,7 @@
 
 package tetris.model;
 
-import tetris.gui.ActionEvent;
+import tetris.gui.ActionHandler;
 import tetris.gui.GUI;
 import tetris.model.figures.*;
 
@@ -36,11 +36,8 @@ public class Game {
     @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
         createFigure();
-
-        while (true) {
-            ActionEvent event = gui.waitEvent();
-            handleEvent(event);
-        }
+        FigureController controller = new FigureController();
+        gui.setActionHandler(controller);
     }
 
     /**
@@ -81,37 +78,50 @@ public class Game {
     }
 
     /**
-     * Handles an action event by moving the figure accordingly.
-     * @param event = the event to handle
-     */
-    private void handleEvent(ActionEvent event) {
-        switch (event) {
-            case MOVE_LEFT:
-                figure.move(-1, 0);
-                break;
-            case MOVE_RIGHT:
-                figure.move(1, 0);
-                break;
-            case MOVE_DOWN:
-                figure.move(0, -1);
-                break;
-            case ROTATE_LEFT:
-                figure.rotate(-1);
-                break;
-            case ROTATE_RIGHT:
-                figure.rotate(1);
-                break;
-            default:
-                break;
-        }
-        updateGUI();
-    }
-
-    /**
      * Updates the graphical user interface according to the current state of the game.
      */
     public void updateGUI() {
         gui.clear();
         gui.drawBlocks(figure.getBlocks());
+    }
+
+    /**
+     * The class FigureController is used to control the figure of the Tetris game.
+     */
+    private class FigureController implements ActionHandler {
+        /* Moves the figure down. */
+        public void moveDown() {
+            figure.move(0, -1);
+            updateGUI();
+        }
+
+        /* Moves the figure left. */
+        public void moveLeft() {
+            figure.move(-1, 0);
+            updateGUI();
+        }
+
+        /* Moves the figure right. */
+        public void moveRight() {
+            figure.move(1, 0);
+            updateGUI();
+        }
+
+        /* Rotates the figure to the left. */
+        public void rotateLeft() {
+            figure.rotate(-1);
+            updateGUI();
+        }
+
+        /* Rotates the figure to the right. */
+        public void rotateRight() {
+            figure.rotate(1);
+            updateGUI();
+        }
+
+        /* Drops the figure. */
+        public void drop() {
+
+        }
     }
 }
