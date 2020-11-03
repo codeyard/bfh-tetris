@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class Game {
     private final GUI gui; /* The graphical user interface. */
+    private final Field field; /* The playing field */
     private final int width; /* The width of the field. */
     private final int height; /* The height of the field. */
     private Figure figure; /* The figure of the game. */
@@ -28,6 +29,7 @@ public class Game {
         this.gui = gui;
         this.width = width;
         this.height = height;
+        this.field = new Field(width, height);
     }
 
     /**
@@ -89,38 +91,85 @@ public class Game {
      */
     private class FigureController implements ActionHandler {
         /* Moves the figure down. */
+        @Override
         public void moveDown() {
-            figure.move(0, -1);
-            updateGUI();
+            try {
+                figure.move(0, -1);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+            }
+            catch (CollisionException ce) {
+                figure.move(0, 1);
+            }
         }
 
         /* Moves the figure left. */
+        @Override
         public void moveLeft() {
-            figure.move(-1, 0);
-            updateGUI();
+            try {
+                figure.move(-1, 0);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+            }
+            catch (CollisionException ce) {
+                figure.move(1, 0);
+            }
         }
 
         /* Moves the figure right. */
+        @Override
         public void moveRight() {
-            figure.move(1, 0);
-            updateGUI();
+            try {
+                figure.move(1, 0);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+            }
+            catch (CollisionException ce) {
+                figure.move(-1, 0);
+            }
         }
 
         /* Rotates the figure to the left. */
+        @Override
         public void rotateLeft() {
-            figure.rotate(-1);
-            updateGUI();
+            try {
+                figure.rotate(-1);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+            }
+            catch (CollisionException ce) {
+                figure.rotate(1);
+            }
         }
 
         /* Rotates the figure to the right. */
+        @Override
         public void rotateRight() {
-            figure.rotate(1);
-            updateGUI();
+            try {
+                figure.rotate(1);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+            }
+            catch (CollisionException ce) {
+                figure.rotate(-1);
+            }
         }
 
         /* Drops the figure. */
+        @Override
         public void drop() {
-
+            boolean isDropped = false;
+            while (!isDropped) {
+                try {
+                    figure.move(0, -1);
+                    field.detectCollision(figure.getBlocks());
+                    updateGUI();
+                }
+                catch (CollisionException ce) {
+                    figure.move(0, 1);
+                    isDropped = true;
+                }
+            }
         }
     }
 }
