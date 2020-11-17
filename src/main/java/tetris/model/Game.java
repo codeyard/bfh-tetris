@@ -8,6 +8,7 @@ package tetris.model;
 
 import tetris.gui.ActionHandler;
 import tetris.gui.GUI;
+import tetris.gui.Status;
 import tetris.model.figures.*;
 
 import java.util.Random;
@@ -39,6 +40,15 @@ public class Game {
         createFigure();
         FigureController controller = new FigureController();
         gui.setActionHandler(controller);
+    }
+
+    /**
+     * Stops the game by unregistering the action handler.
+     */
+    public void stop() {
+        //figure = null;
+        gui.setStatus(Status.OVER);
+        gui.setActionHandler(null);
     }
 
     /**
@@ -75,7 +85,20 @@ public class Game {
                 break;
         }
 
-        updateGUI();
+        try {
+            field.detectCollision(figure.getBlocks());
+            updateGUI();
+        } catch (CollisionException ce) {
+            stop();
+        }
+    }
+
+    /**
+     * Adds the current figure to the field and creates a new figure.
+     */
+    private void figureLanded() {
+        field.addBlocks(figure.getBlocks());
+        createFigure();
     }
 
     /**
@@ -84,6 +107,7 @@ public class Game {
     public void updateGUI() {
         gui.clear();
         gui.drawBlocks(figure.getBlocks());
+        gui.drawBlocks(field.getBlocks());
     }
 
     /**
@@ -97,9 +121,9 @@ public class Game {
                 figure.move(0, -1);
                 field.detectCollision(figure.getBlocks());
                 updateGUI();
-            }
-            catch (CollisionException ce) {
+            } catch (CollisionException ce) {
                 figure.move(0, 1);
+                figureLanded();
             }
         }
 
@@ -110,8 +134,7 @@ public class Game {
                 figure.move(-1, 0);
                 field.detectCollision(figure.getBlocks());
                 updateGUI();
-            }
-            catch (CollisionException ce) {
+            } catch (CollisionException ce) {
                 figure.move(1, 0);
             }
         }
@@ -123,8 +146,7 @@ public class Game {
                 figure.move(1, 0);
                 field.detectCollision(figure.getBlocks());
                 updateGUI();
-            }
-            catch (CollisionException ce) {
+            } catch (CollisionException ce) {
                 figure.move(-1, 0);
             }
         }
@@ -136,8 +158,7 @@ public class Game {
                 figure.rotate(-1);
                 field.detectCollision(figure.getBlocks());
                 updateGUI();
-            }
-            catch (CollisionException ce) {
+            } catch (CollisionException ce) {
                 figure.rotate(1);
             }
         }
@@ -149,8 +170,7 @@ public class Game {
                 figure.rotate(1);
                 field.detectCollision(figure.getBlocks());
                 updateGUI();
-            }
-            catch (CollisionException ce) {
+            } catch (CollisionException ce) {
                 figure.rotate(-1);
             }
         }
@@ -164,9 +184,9 @@ public class Game {
                     figure.move(0, -1);
                     field.detectCollision(figure.getBlocks());
                     updateGUI();
-                }
-                catch (CollisionException ce) {
+                } catch (CollisionException ce) {
                     figure.move(0, 1);
+                    figureLanded();
                     isDropped = true;
                 }
             }
