@@ -8,13 +8,13 @@ package tetris.model;
 
 import tetris.gui.Block;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Field {
     private final int width; /* The width of the field. */
     private final int height; /* The height of the field. */
-    private List<Block> placedBlocks; /* The blocks of the field. */
+    private final List<Block> placedBlocks = new LinkedList<>(); /* The blocks of the field. */
 
     /**
      * Constructs a field with the specified dimension.
@@ -24,7 +24,6 @@ public class Field {
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
-        placedBlocks = new ArrayList<>();
     }
 
     /**

@@ -46,9 +46,9 @@ public class Game {
      * Stops the game by unregistering the action handler.
      */
     public void stop() {
-        //figure = null;
         gui.setStatus(Status.OVER);
         gui.setActionHandler(null);
+        figure = null;
     }
 
     /**
