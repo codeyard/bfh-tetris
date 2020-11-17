@@ -98,6 +98,7 @@ public class Game {
      */
     private void figureLanded() {
         field.addBlocks(figure.getBlocks());
+        int removedRows = field.removeFullRows();
         createFigure();
     }
 
