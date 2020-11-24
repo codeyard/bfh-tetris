@@ -120,11 +120,6 @@ public class Field {
      * @param y = the y-coordinate of the row
      */
     private void removeRow(int y) {
-        /*for (Block block : placedBlocks) {
-            if (block.y == y) {
-                placedBlocks.remove(block);
-            }
-        }*/
         Iterator<Block> iter = placedBlocks.iterator();
         while (iter.hasNext()) {
             Block block = iter.next();

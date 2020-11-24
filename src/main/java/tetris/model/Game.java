@@ -19,6 +19,7 @@ public class Game {
     private final int width; /* The width of the field. */
     private final int height; /* The height of the field. */
     private Figure figure; /* The figure of the game. */
+    private Scoring scoring; /* The scoring of the game. */
 
     /**
      * Constructs a game with the specified graphical user interface.
@@ -31,6 +32,7 @@ public class Game {
         this.width = width;
         this.height = height;
         this.field = new Field(width, height);
+        this.scoring = new Scoring();
     }
 
     /**
@@ -48,6 +50,8 @@ public class Game {
     public void stop() {
         gui.setStatus(Status.OVER);
         gui.setActionHandler(null);
+        scoring.updateHighScore();
+        updateGUI();
         figure = null;
     }
 
@@ -99,6 +103,7 @@ public class Game {
     private void figureLanded() {
         field.addBlocks(figure.getBlocks());
         int removedRows = field.removeFullRows();
+        scoring.updateScore(removedRows);
         createFigure();
     }
 
@@ -109,6 +114,9 @@ public class Game {
         gui.clear();
         gui.drawBlocks(figure.getBlocks());
         gui.drawBlocks(field.getBlocks());
+        gui.setLevel(scoring.getLevel());
+        gui.setScore(scoring.getScore());
+        gui.setHighScore(scoring.getHighScore());
     }
 
     /**
