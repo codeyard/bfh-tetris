@@ -20,6 +20,7 @@ public class Game {
     private final int height; /* The height of the field. */
     private Figure figure; /* The figure of the game. */
     private Scoring scoring; /* The scoring of the game. */
+    private Game.FigureController figureController; /* The figure controller. */
 
     /**
      * Constructs a game with the specified graphical user interface.
@@ -33,6 +34,7 @@ public class Game {
         this.height = height;
         this.field = new Field(width, height);
         this.scoring = new Scoring();
+        this.figureController = new FigureController();
     }
 
     /**
@@ -40,14 +42,15 @@ public class Game {
      */
     public void start() {
         createFigure();
-        FigureController controller = new FigureController();
-        gui.setActionHandler(controller);
+        gui.setActionHandler(figureController);
+        figureController.start();
     }
 
     /**
      * Stops the game by unregistering the action handler.
      */
     public void stop() {
+        figureController.interrupt();
         gui.setStatus(Status.OVER);
         gui.setActionHandler(null);
         figure = null;
@@ -124,10 +127,10 @@ public class Game {
     /**
      * The class FigureController is used to control the figure of the Tetris game.
      */
-    private class FigureController implements ActionHandler {
+    private class FigureController extends Thread implements ActionHandler {
         /* Moves the figure down. */
         @Override
-        public void moveDown() {
+        public synchronized void moveDown() {
             try {
                 figure.move(0, -1);
                 field.detectCollision(figure.getBlocks());
@@ -140,7 +143,7 @@ public class Game {
 
         /* Moves the figure left. */
         @Override
-        public void moveLeft() {
+        public synchronized void moveLeft() {
             try {
                 figure.move(-1, 0);
                 field.detectCollision(figure.getBlocks());
@@ -152,7 +155,7 @@ public class Game {
 
         /* Moves the figure right. */
         @Override
-        public void moveRight() {
+        public synchronized void moveRight() {
             try {
                 figure.move(1, 0);
                 field.detectCollision(figure.getBlocks());
@@ -164,7 +167,7 @@ public class Game {
 
         /* Rotates the figure to the left. */
         @Override
-        public void rotateLeft() {
+        public synchronized void rotateLeft() {
             try {
                 figure.rotate(-1);
                 field.detectCollision(figure.getBlocks());
@@ -176,7 +179,7 @@ public class Game {
 
         /* Rotates the figure to the right. */
         @Override
-        public void rotateRight() {
+        public synchronized void rotateRight() {
             try {
                 figure.rotate(1);
                 field.detectCollision(figure.getBlocks());
@@ -188,7 +191,7 @@ public class Game {
 
         /* Drops the figure. */
         @Override
-        public void drop() {
+        public synchronized void drop() {
             boolean isDropped = false;
             while (!isDropped) {
                 try {
@@ -199,6 +202,21 @@ public class Game {
                     figure.move(0, 1);
                     figureLanded();
                     isDropped = true;
+                }
+            }
+        }
+
+        /**
+         * Moves the figure downwards with a speed depending on the level of the game.
+         */
+        @Override
+        public void run() {
+            while (!Thread.interrupted()) {
+                try {
+                    sleep(1000 - (scoring.getLevel() * 100));
+                    moveDown();
+                } catch (InterruptedException e) {
+                    break;
                 }
             }
         }
