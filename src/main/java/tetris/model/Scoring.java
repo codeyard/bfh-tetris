@@ -5,29 +5,20 @@
 package tetris.model;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class Scoring {
     private static final int[] SCORE_REWARDS = new int[] {40, 100, 300, 1200}; /* The score rewards for the removal of full rows. */
     private static final int LINES_PER_LEVEL = 10; /* The number of lines needed to enter the next level. */
-    private static final String HIGH_SCORE_FILE = ".highscore"; /* The name of the high score file. */
-    private int removedRows; /* The total number of removed rows. */
-    private int score; /* The current score of the game. */
-    private int highScore; /* The high score of the game. */
+    private static final String HIGH_SCORE_FILE = "highscore.txt"; /* The name of the high score file. */
+    private int removedRows = 0; /* The total number of removed rows. */
+    private int score = 0; /* The current score of the game. */
+    private int highScore = 0; /* The high score of the game. */
 
     /**
      * Constructs a scoring and reads the high score file.
      */
     public Scoring() {
-        File file = new File(HIGH_SCORE_FILE);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        reset();
         loadHighScore();
     }
 
@@ -84,32 +75,32 @@ public class Scoring {
     public void reset() {
         removedRows = 0;
         score = 0;
-        highScore = 0;
     }
 
     /**
      * Loads the high score from the high score file.
      */
     private void loadHighScore() {
-        try (FileInputStream inputStream = new FileInputStream(HIGH_SCORE_FILE)) {
-            highScore = inputStream.read();
+        try (Scanner scanner = new Scanner(new FileInputStream(HIGH_SCORE_FILE))) {
+            highScore = Integer.parseInt(scanner.nextLine());
             if (highScore < 0) {
                 highScore = 0;
             }
-            System.out.println(highScore);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.err.println("High score could not be read.");
         }
     }
 
     /**
      * Saves the high score to the high score file.
      */
-    private void saveHighScore()  {
-        try (FileOutputStream outputStream = new FileOutputStream(HIGH_SCORE_FILE)) {
-            outputStream.write(highScore);
+    private void saveHighScore() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(HIGH_SCORE_FILE))) {
+            writer.println(highScore);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("High score could not be written.");
         }
     }
 }

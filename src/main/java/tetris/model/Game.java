@@ -50,9 +50,9 @@ public class Game {
     public void stop() {
         gui.setStatus(Status.OVER);
         gui.setActionHandler(null);
+        figure = null;
         scoring.updateHighScore();
         updateGUI();
-        figure = null;
     }
 
     /**
@@ -112,8 +112,10 @@ public class Game {
      */
     public void updateGUI() {
         gui.clear();
-        gui.drawBlocks(figure.getBlocks());
         gui.drawBlocks(field.getBlocks());
+        if (figure != null) {
+            gui.drawBlocks(figure.getBlocks());
+        }
         gui.setLevel(scoring.getLevel());
         gui.setScore(scoring.getScore());
         gui.setHighScore(scoring.getHighScore());
