@@ -8,7 +8,7 @@ package tetris.model;
 
 import tetris.gui.Block;
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,7 +73,16 @@ public class Field {
      * @throws CollisionException if one of the blocks collides
      */
     public void detectCollision(Block[] blocks) throws CollisionException {
-        for (Block block : blocks) {
+        // Number of blocks that are not collided
+        long notCollided = Arrays.stream(blocks)
+            .filter(block -> !(block.x < 0 || block.x >= getWidth() || block.y < 0))
+            .filter(block -> placedBlocks.stream().noneMatch(placedBlock -> placedBlock.x == block.x && placedBlock.y == block.y))
+            .count();
+
+        if (notCollided < blocks.length) {
+            throw new CollisionException("Collision detected!");
+        }
+        /*for (Block block : blocks) {
             if (block.x < 0 || block.x >= getWidth() || block.y < 0) {
                 throw new CollisionException("Collision with field border detected.");
             }
@@ -82,7 +91,7 @@ public class Field {
                     throw new CollisionException("Collision with other Block detected.");
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -106,13 +115,14 @@ public class Field {
      * @return true if the row is full, false otherwise
      */
     private boolean isRowFull(int y) {
-        int numOfBlocksInRow = 0;
+        return placedBlocks.stream().filter(block -> block.y == y).count() == width;
+        /*int numOfBlocksInRow = 0;
         for (Block block : placedBlocks) {
             if (block.y == y) {
                 numOfBlocksInRow++;
             }
         }
-        return numOfBlocksInRow == getWidth();
+        return numOfBlocksInRow == getWidth();*/
     }
 
     /**
@@ -120,14 +130,15 @@ public class Field {
      * @param y = the y-coordinate of the row
      */
     private void removeRow(int y) {
-        Iterator<Block> iter = placedBlocks.iterator();
-        while (iter.hasNext()) {
-            Block block = iter.next();
-            if (block.y == y) {
-                iter.remove();
-            } else if (block.y > y) {
+        placedBlocks.removeIf(block -> block.y == y);
+        placedBlocks.stream()
+            .filter(block -> block.y > y)
+            .forEach(block -> block.y--);
+
+        /*placedBlocks.forEach(block -> {
+            if (block.y > y) {
                 block.y--;
             }
-        }
+        });*/
     }
 }

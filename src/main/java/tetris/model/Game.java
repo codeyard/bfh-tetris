@@ -55,7 +55,6 @@ public class Game {
         gui.setActionHandler(null);
         figure = null;
         scoring.updateHighScore();
-        updateGUI();
     }
 
     /**
@@ -131,12 +130,7 @@ public class Game {
         /* Moves the figure down. */
         @Override
         public synchronized void moveDown() {
-            try {
-                figure.move(0, -1);
-                field.detectCollision(figure.getBlocks());
-                updateGUI();
-            } catch (CollisionException ce) {
-                figure.move(0, 1);
+            if (!execute(fig -> fig.move(0, -1), fig -> fig.move(0, 1))) {
                 figureLanded();
             }
         }
@@ -144,65 +138,54 @@ public class Game {
         /* Moves the figure left. */
         @Override
         public synchronized void moveLeft() {
-            try {
-                figure.move(-1, 0);
-                field.detectCollision(figure.getBlocks());
-                updateGUI();
-            } catch (CollisionException ce) {
-                figure.move(1, 0);
-            }
+            execute(fig -> fig.move(-1, 0), fig-> fig.move(1, 0));
         }
 
         /* Moves the figure right. */
         @Override
         public synchronized void moveRight() {
-            try {
-                figure.move(1, 0);
-                field.detectCollision(figure.getBlocks());
-                updateGUI();
-            } catch (CollisionException ce) {
-                figure.move(-1, 0);
-            }
+            execute(fig -> fig.move(1, 0), fig-> fig.move(-1, 0));
         }
 
         /* Rotates the figure to the left. */
         @Override
         public synchronized void rotateLeft() {
-            try {
-                figure.rotate(-1);
-                field.detectCollision(figure.getBlocks());
-                updateGUI();
-            } catch (CollisionException ce) {
-                figure.rotate(1);
-            }
+            execute(fig -> fig.rotate(-1), fig-> fig.rotate(1));
         }
 
         /* Rotates the figure to the right. */
         @Override
         public synchronized void rotateRight() {
-            try {
-                figure.rotate(1);
-                field.detectCollision(figure.getBlocks());
-                updateGUI();
-            } catch (CollisionException ce) {
-                figure.rotate(-1);
-            }
+            execute(fig -> fig.rotate(1), fig-> fig.rotate(-1));
         }
 
-        /* Drops the figure. */
+        /**
+         * Drops the figure.
+         * Does not need figureLanded() thanks to the Thread. If we had figureLanded(), it would not be possible to
+         * move the figure after dropping
+         */
         @Override
         public synchronized void drop() {
-            boolean isDropped = false;
-            while (!isDropped) {
-                try {
-                    figure.move(0, -1);
-                    field.detectCollision(figure.getBlocks());
-                    updateGUI();
-                } catch (CollisionException ce) {
-                    figure.move(0, 1);
-                    figureLanded();
-                    isDropped = true;
-                }
+            while (execute(fig -> fig.move(0, -1), fig -> fig.move(0, 1)))  {
+            }
+            //figureLanded();
+        }
+
+        /**
+         * Makes a movement with the figure; if the resulting figure collides with the field, makes the reverse movement.
+         * @param movement = the movement to make
+         * @param reverseMovement = the reverse movement
+         * @return true, if the movement was successful, false otherwise
+         */
+        private boolean execute(Movement movement, Movement reverseMovement) {
+            try {
+                movement.make(figure);
+                field.detectCollision(figure.getBlocks());
+                updateGUI();
+                return true;
+            } catch (CollisionException ce) {
+                reverseMovement.make(figure);
+                return false;
             }
         }
 
@@ -213,7 +196,8 @@ public class Game {
         public void run() {
             while (!Thread.interrupted()) {
                 try {
-                    sleep(1000 - (scoring.getLevel() * 100));
+                    //Thread.sleep(1000 - (scoring.getLevel() * 100));
+                    Thread.sleep((long) (1000 * Math.exp(-0.1 * scoring.getLevel())));
                     moveDown();
                 } catch (InterruptedException e) {
                     break;
